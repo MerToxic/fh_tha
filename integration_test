@@ -1,0 +1,81 @@
+Integration test case: Block cross-member access using encounterId in extraData (IDOR)
+Description: Things that need to be checked: 
+
+- The page does not render any prefilled answers, appointment details, or identifying information tied to Member A.
+
+- Any API request that includes that encounterId returns:
+
+HTTP 403/404 (not 200), and a response body that does not contain Member A data.
+
+- If the app creates a new encounter for Member B instead, ensure the new encounterId differs from A’s and is owned by B.
+
+Test Case ID: IT_001
+Title: Member cannot open another member’s medical questionnaire by swapping encounterId in extraData
+Type: Integration test (browser UI + backend authorization)
+Priority: P1
+
+Preconditions
+
+Two member accounts exist: Member A and Member B.
+
+Member A has (or can create) a valid encounter that produces a real encounterId.
+
+Staging environment is used.
+
+Test data: 
+
+encounterId belonging to Member A:
+097661a4-bf5f-47dd-86a2-ef7f1d1908b0
+
+URL pattern:
+/medical-questionnaire?flow=medical-questionnaire&direct=true&clearData=true&extraData=<urlencoded-json>
+
+Where extraData JSON includes:
+{"encounterId":"<uuid>"}
+
+Steps
+
+Log in as Member A on https://myezra-staging.ezra.com.
+
+Start “Begin Medical Questionnaire” from A’s normal flow (so the encounter is legitimately created).
+
+Capture Member A’s encounterId from the system (Network tab request payload or the extraData URL).
+
+Log out.
+
+Log in as Member B.
+
+In the same browser session as Member B (authenticated as B), open the medical questionnaire URL that includes Member A’s encounterId, for example:
+https://myezra-staging.ezra.com/medical-questionnaire?flow=medical-questionnaire&direct=true&clearData=true&extraData={...A encounterId...}
+(Use the exact captured URL; no need to manually retype.)
+
+Observe the UI behavior and capture the backend API calls made after page load (Network tab).
+
+(Negative variation) Modify the encounterId slightly (e.g., change 1 character) and reload to test enumeration/guessing.
+
+Expected results:
+
+1. Member B must not be able to access Member A’s questionnaire or any medical data.
+
+2. The system should respond with one of these safe outcomes:
+
+3. Redirect to a safe starting point (e.g., dashboard or “start questionnaire” for B), without loading A’s data, or
+
+4. Show an authorization error page/state.
+
+5. Backend calls that fetch questionnaire/encounter data must return 403 or 404 for Member B.
+
+6. No PHI appears in:
+
+the UI,
+
+API responses,
+
+error messages,
+
+console logs.
+
+
+
+
+
