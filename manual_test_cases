@@ -1,17 +1,21 @@
-| Priority | Area                   | Scenario                                            | What to verify                                                                                               | Why it matters                             |
-| -------- | ---------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
-| P0       | Booking + Payment      | Happy path: book → pay → confirmation               | Exactly one booking + one successful payment; confirmation shows correct slot/provider; receipt state stored | Core revenue + patient experience          |
-| P0       | Payment integrity      | Refresh/back/double-click after “Pay”               | No duplicate charges; idempotency key behavior; booking not duplicated                                       | Prevent double charge + trust loss         |
-| P0       | State consistency      | Payment succeeds but booking fails (and vice versa) | Atomic/compensating logic; correct user messaging; no “ghost” appointments                                   | Prevent care disruption and support burden |
-| P0       | Availability integrity | Two users book same slot concurrently               | Only one succeeds; loser gets clear error + alternative slots                                                | Prevent overbooking (high impact)          |
-| P0       | Authorization          | Patient A cannot access Patient B booking           | API + UI access blocked; IDs not enumerable; 403/404 correct                                                 | PHI exposure risk                          |
-| P0       | Privacy leakage        | No PHI in logs/URLs/analytics/errors                | Inspect network calls, server logs (test env), client console; analytics payloads                            | Regulatory + reputational risk             |
-| P0       | Webhook security       | Payment webhook signature verification              | Reject invalid signatures; replay protection; idempotent event processing                                    | Prevent spoofing and corruption            |
-| P1       | Booking rules          | Reschedule/cancel policies                          | Cutoffs, fees, slot returns, notifications, audit trail                                                      | Common real-world usage                    |
-| P1       | Time handling          | Time zones + DST                                    | Slot displayed and stored correctly; reminders correct                                                       | Frequent subtle bugs                       |
-| P1       | Payment failures       | Declines/timeouts                                   | Clear recovery path; no booking confirmation (or safe pending state)                                         | Reduces drop-off + tickets                 |
-| P1       | Refunds                | Cancel → refund full/partial                        | Correct amount, status transitions, receipts, audit                                                          | Money + trust                              |
-| P1       | Notifications          | Email/SMS confirmation content                      | No PHI; correct time/location; links require auth                                                            | Privacy + clarity                          |
-| P2       | Input validation       | Edge fields (names, phone, DOB formats)             | Validations, localization, error handling                                                                    | Quality polish                             |
-| P2       | UX/accessibility       | Keyboard nav, focus, error placement                | Basic checks; no blockers   
-                      |
+| Priority | Area                   | Scenario                                            | What to verify                                                                                               |
+| -------- | ---------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| P1       | Account creation       | Create new user with SSO and email                  | User account created successfully; user can log in and proceed to booking flow                               |
+| P1       | Booking + Payment      | Happy path: book → pay → confirmation               | Exactly one booking + one successful payment; confirmation shows correct slot/provider; receipt state stored |
+| P1       | Privacy leakage        | No PHI in logs/URLs/analytics/errors                | Inspect network calls, server logs (test env), client console, analytics p                         |
+| P1       | Payment integrity      | Refresh/back/double-click after “Pay”               | No duplicate charges; booking not duplicated                                       |
+| P1       | State consistency      | Payment succeeds but booking fails (and vice versa) | Correct user messaging; no inconsistent or “ghost” appointments                                              |
+| P1       | Availability integrity | Two users book same slot concurrently               | Only one succeeds; the other receives clear error/state message with alternative slots                       |
+| P1       | Authorization          | Patient A cannot access Patient B booking           | API + UI access blocked; IDs not enumerable; proper 403/404 responses                                        |
+| P1       | Time handling          | Time zones + DST                                    | Slot displayed and stored correctly; reminders sent at correct time                                          |
+| P1       | Payment failures       | Declines/timeouts                                   | Clear recovery path; booking not confirmed (or placed in safe pending state)                                 |
+| P1       | Refunds                | Cancel → refund full/partial                        | Correct refund amount; proper status transitions, receipts, and audit trail                                  |
+| P1       | Notifications          | Email/SMS confirmation content                      | No PHI exposure; correct time/location; links require authentication                                         |
+| P2       | Input validation       | Edge fields (names, phone, DOB formats)             | Proper validation, localization handling, and clear error messages                                           |
+| P2       | Password reset         | Forgot password                                     | Reset email sent correctly; user can reset password and sign in successfully afterward                       |
+
+# I put account creation 1st cause without succcessful sign up/login no further action is possible, the user would be blocked
+# Happy path scenario comes 2nd cause it ensures the flow works on the whole. 
+# Privacy (PHI compliance) should be main priority so I'd put it 3rd after user submits any data of themselves -- 'cause adheres it is crucial for business
+# All in all that is difficult to choose only 3 tests, f.e., validation (negative testing is super important here as well -- 
+# let us say the person who is younger than 18 years old or with an invalid/expired CC or both patients doing something real-time situations are handled properly). 
