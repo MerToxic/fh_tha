@@ -19,3 +19,22 @@
 # Privacy (PHI compliance) should be main priority so I'd put it 3rd after user submits any data of themselves -- 'cause adheres it is crucial for business
 # All in all that is difficult to choose only 3 tests, f.e., validation (negative testing is super important here as well -- 
 # let us say the person who is younger than 18 years old or with an invalid/expired CC or both patients doing something real-time situations are handled properly). 
+
+
+Example test case: 
+Verify user is able to book a scan
+Pre-requisites: 
+The user already has an account with Ezra. 
+The user already has their DOB and Sex at Birth filled. 
+
+| Step                                                                                                        | Expected Result                                                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Login to [https://myezra-](https://myezra-)<env>.ezra.com/sign-in with the valid user name and password. | The user should be able to log in successfully. The Select a Scan step of the booking process is displayed.                                               |
+| 2. Select a Scan from available ones.                                                                       | The Continue button becomes enabled and the user is taken to the bottom of the page.                                                                      |
+| 3. Select the Continue button.                                                                              | The user is taken to the Schedule Your Scan step of the booking process.                                                                                  |
+| 4. Select the state from the State dropdown.                                                                | The centers are filtered according to the selected state.                                                                                                 |
+| 5. Select the center.                                                                                       | The calendar with available dates is displayed.                                                                                                           |
+| 6. Select the date.                                                                                         | Available time slots are displayed.                                                                                                                       |
+| 7. Select the slot.                                                                                         | The selected slot is highlighted or selected and the Continue button becomes enabled.                                                                     |
+| 8. Select the Continue button.                                                                              | The user is taken to the Reserve Your Appointment page.                                                                                                   |
+| 9. Fill in the required fields on the Reserve Your Appointment page and select the Continue button.         | The user should be taken to the confirmation page. (Btw: Actual result: the user is logged out of the app and then offered a medical questionnaire to complete.) |
