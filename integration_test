@@ -87,3 +87,52 @@ https://stage-api.ezra.com/diagnostics/api/medicaldata/forms/mq/submissions/2880
 and they shouldn't get 200 response. 
 
 
+Step 1 — Valid access (Member A)
+
+Member A logs in and loads their questionnaire.
+
+GET /diagnostics/api/medicaldata/forms/mq/submissions/2880/data
+Host: stage-api.ezra.com
+Cookie: session=memberA_session
+
+Expected result:
+
+HTTP 200 OK
+
+The API returns Member A’s questionnaire data.
+
+Step 2 — Unauthorized access attempt (Member B)
+
+Now Member B logs in and tries to access the same submission ID (2880).
+
+GET /diagnostics/api/medicaldata/forms/mq/submissions/2880/data
+Host: stage-api.ezra.com
+Cookie: session=memberB_session
+
+Expected result:
+
+HTTP 403 Forbidden
+
+or
+
+HTTP 404 Not Found
+
+The response must not return any medical questionnaire data.
+
+One more test would be to increment the id (just in case): 
+GET /diagnostics/api/medicaldata/forms/mq/submissions/2881/data
+
+Expected result:
+
+HTTP 403 or 404
+
+This checks the API cannot be enumerated to discover other patients' questionnaires.
+
+__________________________________________________________________________
+
+Part 3: 
+Solution for many endpoints with sensitive data would be: 
+Having proper documentation where security procedures are written (f.e., encryption, authorization, permissions, input validation, logging, protection agains vulnerabilities)
+Automation of some checks that runs with CI/CD when the new code is deployed
+Some security tools 
+Proper logging
