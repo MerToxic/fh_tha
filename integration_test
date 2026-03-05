@@ -1,3 +1,4 @@
+Part 1:
 Integration test case: Block cross-member access using encounterId in extraData (IDOR)
 Description: Things that need to be checked: 
 
@@ -74,8 +75,15 @@ API responses,
 error messages,
 
 console logs.
+____________________________________________________________________________
 
+Part 2: 
+After Member A obtains submission ID Member B should log in and try to access the same submission ID (2880).
 
-
+GET /diagnostics/api/medicaldata/forms/mq/submissions/2880/data
+Host: stage-api.ezra.com
+Cookie: session=memberB_session
+https://stage-api.ezra.com/diagnostics/api/medicaldata/forms/mq/submissions/2880/data
+and they shouldn't get 200 response. 
 
 
